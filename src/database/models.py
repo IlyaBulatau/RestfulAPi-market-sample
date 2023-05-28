@@ -30,6 +30,16 @@ class User(Base):
         session.add(self)
         session.commit()
 
+    def change_data_to_db(self, **kwargs):
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+        session.commit()
+
+    def delete_from_db(self):
+         session.delete(self)
+         session.commit()
+
+
     @classmethod
     def authenticate(cls, **kwargs):
         email = kwargs.get('email', None)
@@ -47,8 +57,17 @@ class Category(Base):
     products = relationship('Product', backref='category')
 
     def save_to_db(self):
-            session.add(self)
-            session.commit()
+        session.add(self)
+        session.commit()
+    
+    def change_data_to_db(self, **kwargs):
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+        session.commit()
+    
+    def delete_from_db(self):
+         session.delete(self)
+         session.commit()
 
 
 class Product(Base):
@@ -62,5 +81,17 @@ class Product(Base):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
     def save_to_db(self):
-            session.add(self)
-            session.commit()
+        session.add(self)
+        session.commit()
+
+    def change_data_to_db(self, **kwargs):
+        for key, val in kwargs.items():
+            if not getattr(self, key, None):
+                raise ValueError(f'Product not have {key} attribute')
+            setattr(self, key, val)
+        session.commit()
+
+
+    def delete_from_db(self):
+         session.delete(self)
+         session.commit()
