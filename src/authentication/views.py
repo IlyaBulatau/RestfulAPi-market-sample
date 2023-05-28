@@ -11,12 +11,23 @@ class RegisterView(MethodView):
         params = request.json
         user = User(**params)
         
-        shema = RegisterShemaValidator()
-        serialize = shema.dump(user)
-        shema.load(serialize)
+        try:
+            shema = RegisterShemaValidator()
+            serialize = shema.dump(user)
+            shema.load(serialize)
+        except Exception as e:
+            log.warning(str(e))
+            return jsonify({
+                'Message Error': str(e) 
+            })
 
-        user.save_to_db()
-        log.info(f'Register New User ID: {user.id}')
+        try:
+            user.save_to_db()
+            log.info(f'Register New User ID: {user.id}')
+        except Exception as e:
+            return jsonify({
+                'Message Error': str(e)
+            })
 
         token = user.get_token()
         log.info(f'User: ID {user.id} get token: {token}')
@@ -30,7 +41,13 @@ class LoginView(MethodView):
 
     def post(self):
         params = request.json
-        user = User.authenticate(**params)
+        try:
+            user = User.authenticate(**params)
+        except Exception as e:
+            log.warning(str(e))
+            return jsonify({
+                'Message Error': str(e)
+            })
 
         token = user.get_token()
         log.info(f'User: ID {user.id} get token: {token}')

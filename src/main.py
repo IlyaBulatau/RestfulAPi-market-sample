@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
-
+import flask
 from database.connect import Base, session, engine
 from database.models import User, Category, Product
 
@@ -9,9 +9,10 @@ from authentication.auth import auth
 import config
 from log.log import log
 
+flask.json.provider.DefaultJSONProvider.sort_keys = False
 
 app = Flask(__name__)
-app.config.from_object('config.Development')
+app.config.from_object(config.Development)
 app.logger.addHandler(log)
 
 jwt = JWTManager()
@@ -29,4 +30,5 @@ if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     app.run()
 
-# TODO - обработка исключений и ошибок 
+# TODO - обработка исключений
+# openapi

@@ -3,7 +3,7 @@ from flask import request, jsonify, url_for, redirect
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from database.models import User, Product, Category
-from market.serializers import ProductListSerializer, ProductDetailSerializer
+from market.serializers import ProductDetailSerializer, CategoryDetailSerialier
 from market.validators import ProductCreateValidater
 from log.log import log
 
@@ -13,7 +13,7 @@ class ProductListView(MethodView):
 
     def get(self):
         products = Product.query.all()
-        serialier = ProductListSerializer(many=True)
+        serialier = ProductDetailSerializer(many=True, only=('id', 'name', 'description', 'price'))
         return jsonify(serialier.dump(products))
         
     
@@ -44,12 +44,7 @@ class ProductListView(MethodView):
                 'Message Error': str(e)
             })
 
-        user = product.user
-        category = product.category
-
         serializaer = ProductDetailSerializer()
-        serializaer.user = user
-        serializaer.category = category
         result = serializaer.dump(product)
 
         log.info(f'UserID: {user_id} add new product with ID: {product.id}')
@@ -131,3 +126,45 @@ class ProductDetailView(MethodView):
         return jsonify({
             "Message": f"Produtc with ID {product_id} delete"
         })
+
+class MyProductView(MethodView):
+    decorators = [jwt_required()]
+
+    def get(self):
+        user_id = get_jwt_identity()
+
+        products = Product.query.filter(Product.user_id == user_id).all()
+        schema = ProductDetailSerializer(many=True, only=('id', 'name', 'description', 'price', 'category'))
+        serializer = schema.dump(products)
+        
+        return jsonify(serializer)
+    
+
+class CategoryListView(MethodView):
+    decorators = [jwt_required()]
+
+    def get(self):
+        categories = Category.query.all()
+        schema = CategoryDetailSerialier(many=True)
+        serializer = schema.dump(categories)
+
+        return jsonify(serializer)
+
+
+class ProductByCategoryView(MethodView):
+    decorators = [jwt_required()]
+
+    def get(self, category_id):
+        category = Category.query.filter(Category.id == category_id).first()
+        if not category:
+            log.warning('This is category not found')
+            return jsonify({
+                "Message Error": 'This is category not found'
+            })
+        
+        product = Product.query.filter(Product.category_id == category_id).all()
+
+        schema = ProductDetailSerializer(many=True)
+        serialier = schema.dump(product)
+
+        return jsonify(serialier)

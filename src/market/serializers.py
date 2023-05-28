@@ -4,8 +4,13 @@ from database.models import Category, User
 
 
 class CategoryDetailSerialier(Schema):
+
+    class Meta:
+        ordered = True
+
     id = fields.Integer()
     name = fields.String()
+
 
 class UserDetailSerialier(Schema):
     id = fields.Integer()
@@ -15,14 +20,8 @@ class UserDetailSerialier(Schema):
     password = fields.String(load_only=True)
 
 
-class ProductListSerializer(Schema):
-    id = fields.Integer()
-    name = fields.String(required=True, validate=validate.Length(max=255))
-    description = fields.String(required=False, missing=None, load_only=True)
-    price = fields.String(required=True)
-
-
 class ProductDetailSerializer(Schema):
+
     id = fields.Integer()
     name = fields.String()
     description = fields.String(required=False, missing=None)
@@ -32,8 +31,5 @@ class ProductDetailSerializer(Schema):
     category = fields.Nested(CategoryDetailSerialier)
     user = fields.Nested(UserDetailSerialier)
 
-
-class CategoryListSerialier(Schema):
-    ...
-
-
+    class Meta:
+        ordered = True
