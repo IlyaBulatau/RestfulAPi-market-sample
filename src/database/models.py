@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 
 from database.connect import Base, session
+from log.log import log
 
 class User(Base):
     __tablename__ = 'users'
@@ -27,18 +28,29 @@ class User(Base):
         return token
     
     def save_to_db(self):
-        session.add(self)
-        session.commit()
+        try:
+            session.add(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
     def change_data_to_db(self, **kwargs):
-        for key, val in kwargs.items():
-            setattr(self, key, val)
-        session.commit()
+        try:
+            for key, val in kwargs.items():
+                setattr(self, key, val)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
     def delete_from_db(self):
-         session.delete(self)
-         session.commit()
-
+        try:
+            session.delete(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
     @classmethod
     def authenticate(cls, **kwargs):
@@ -57,18 +69,29 @@ class Category(Base):
     products = relationship('Product', backref='category')
 
     def save_to_db(self):
-        session.add(self)
-        session.commit()
-    
-    def change_data_to_db(self, **kwargs):
-        for key, val in kwargs.items():
-            setattr(self, key, val)
-        session.commit()
-    
-    def delete_from_db(self):
-         session.delete(self)
-         session.commit()
+        try:
+            session.add(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
+    def change_data_to_db(self, **kwargs):
+        try:
+            for key, val in kwargs.items():
+                setattr(self, key, val)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
+
+    def delete_from_db(self):
+        try:
+            session.delete(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
 class Product(Base):
     __tablename__ = 'products'
@@ -81,17 +104,28 @@ class Product(Base):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
     def save_to_db(self):
-        session.add(self)
-        session.commit()
+        try:
+            session.add(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
     def change_data_to_db(self, **kwargs):
-        for key, val in kwargs.items():
-            if not getattr(self, key, None):
-                raise ValueError(f'Product not have {key} attribute')
-            setattr(self, key, val)
-        session.commit()
-
+        try:
+            for key, val in kwargs.items():
+                if not getattr(self, key, None):
+                    raise ValueError(f'Product not have {key} attribute')
+                setattr(self, key, val)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
 
     def delete_from_db(self):
-         session.delete(self)
-         session.commit()
+        try:
+            session.delete(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
