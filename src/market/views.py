@@ -20,18 +20,23 @@ class ProductListView(MethodView):
     def post(self):
         params = request.json
         user_id = get_jwt_identity()
-    
-        product = Product(**params)
+
+        try:
+            product = Product(**params)
+        except Exception as e:
+            log.warning(str(e))
+            return jsonify({
+                'Message Error': str(e)
+            })
 
         try:
             schema = ProductCreateValidater()
             serializaer = schema.dump(product)
             schema.load(serializaer)
         except Exception as e:
-            msg = e.args[0].get('_schema')
-            log.warning(msg)
+            log.warning(str(e))
             return jsonify({
-                'Message Error': msg
+                'Message Error': str(e)
             })
 
         product.user_id = user_id

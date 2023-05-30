@@ -6,6 +6,7 @@ from database.models import User, Category, Product
 
 from market.market import market
 from authentication.auth import auth
+from errors.handlers import register_all_errors_from_app
 import config
 from log.log import log
 
@@ -18,6 +19,7 @@ app.logger.addHandler(log)
 jwt = JWTManager()
 jwt.init_app(app)
 
+register_all_errors_from_app(app)
 
 app.register_blueprint(auth, url_prefix='/api/auth')
 app.register_blueprint(market, url_prefix='/api/market')
