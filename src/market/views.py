@@ -8,6 +8,7 @@ from market.validators import ProductCreateValidater
 from log.log import log
 
 
+
 class ProductListView(MethodView):
     decorators = [jwt_required()]
 
@@ -173,3 +174,4 @@ class ProductByCategoryView(MethodView):
         serialier = schema.dump(product)
 
         return jsonify(serialier)
+    

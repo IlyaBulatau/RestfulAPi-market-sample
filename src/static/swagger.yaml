@@ -1,0 +1,235 @@
+---
+openapi: "3.0.0"
+info:
+  description: "API Examples responce"
+  version: "1.0.6"
+  title: "RestfulAPI"
+  contact:
+    email: "ilyabulatau@gmail.com"
+host: "127.0.0.1:5000"
+servers:
+  - url: http://127.0.0.1:5000/api
+schemes:
+- "http"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+############################################ Config
+paths: ########################## /market
+  /market/products:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market" 
+      summary: "get products list"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market"
+      summary: "add new product"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      - "text/json"
+      parameters:
+      - name: name
+        schema:
+         type: string
+      - decription: description
+        schema:
+        type: string
+      - price: price
+      - category_id: category_id
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+  /market/products/my_products:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market" 
+      summary: "get my products list"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+  /market/categories:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market" 
+      summary: "get categories list"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+  /market/categories/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market"
+      parameters:
+        - in: path
+          name: id   # Note the name is the same as in the path
+          required: true
+          schema:
+            type: integer
+            minimum: 1 
+      summary: "get category by number"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+  /market/products/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market"
+      parameters:
+        - in: path
+          name: id   # Note the name is the same as in the path
+          required: true
+          schema:
+            type: integer
+            minimum: 1 
+      summary: "get products by number"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+  /market/products/{id}/delete:
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market"
+      parameters:
+        - in: path
+          name: id   # Note the name is the same as in the path
+          required: true
+          schema:
+            type: integer
+            minimum: 1 
+      summary: "delete product by number"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+  /market/products/{id}/change:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+      - "Market"
+      parameters:
+        - in: path
+          name: id   # Note the name is the same as in the path
+          required: true
+          schema:
+            type: integer
+            minimum: 1 
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          decription: description
+          schema:
+            type: string
+        - price: price
+        - category_id: category_id
+
+      summary: "Change values products by number"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "text/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: ""
+
+  /auth/login: ############################ /auth
+    post:
+      tags:
+      - "auth"
+      summary: "Login"
+      description: ""
+      operationId: "login user"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - email: "body"
+      - password: "body"
+      responses:
+        200:
+          description: "Login"
+
+  /api/auth/register: ############################
+    post:
+      tags:
+      - "auth"
+      summary: "Register"
+      description: ""
+      operationId: "register user"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - username: "body"
+      - email: "body"
+      - password: "body"
+      -location: "body"
+      responses:
+        200:
+          description: "Login"

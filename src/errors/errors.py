@@ -1,5 +1,5 @@
 from werkzeug.exceptions import HTTPException
-
+import json
 
 class BaseHTTPException(HTTPException):
 
@@ -9,7 +9,11 @@ class BaseHTTPException(HTTPException):
     
     def get_body(self, environ: None = None, scope: dict | None = None) -> str:
         resp = self.name if self.description == '' else self.description
-        return '{'+f'{self.code}: {resp}'+'}'
+        return json.dumps({
+            'Error':
+            {'Code': self.code,
+            'Message': resp
+        }})
     
     def get_headers(self, environ: None = None, scope: dict | None = None) -> list[tuple[str, str]]:
         return[("Content-type", "text/json; charset=utf-8   ")] 

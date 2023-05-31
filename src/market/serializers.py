@@ -1,6 +1,4 @@
-from marshmallow import Schema, fields, validate
-
-from database.models import Category, User
+from marshmallow import Schema, fields
 
 
 class CategoryDetailSerialier(Schema):
