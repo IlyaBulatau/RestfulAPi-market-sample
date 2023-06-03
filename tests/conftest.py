@@ -4,7 +4,7 @@ import requests
 import sys
 sys.path.append('./src')
 
-from database.models import User, Product
+from database.models import Product
 from main import app as main_app
 
 
@@ -75,5 +75,10 @@ def headers(token):
     headers = {"Authorization": f"Bearer {token}"}
     return headers
 
-
-
+@pytest.fixture()
+def product_id(product_params):
+    """
+    Get product ID in database
+    """
+    product = Product.query.filter(Product.name == product_params['name']).first()
+    return product.id
