@@ -1,70 +1,80 @@
 import pytest
-import requests
-import sys
-sys.path.append('./src')
 
-@pytest.fixture()
-def token():
-    params = {'email': 'artem@mail.ru', 'password': '1234'}
-    get_token = requests.post('http://127.0.0.1:5000/api/auth/login', json=params).json()
-    token = get_token.get('token')
-    return token
 
-# TOKEN = requet_to_get_token()
-@pytest.fixture()
-def headers(token):
-    headers = {"Authorization": f"Bearer {token}"}
-    return headers
+def test_get_token(token):
+    assert token != None
 
-DATA = {
-    "name": "Notebook TECHNO",
-    "price": "11000",
-    "category_id": "3"
-}   
 
-def test_get_products_list(headers):
-    """
-    GET /api/market/products
-    """
-    req = requests.get('http://127.0.0.1:5000/api/market/products', headers=headers)
-    assert req.status_code == 200
+class TestProductApi:
 
-def test_get_my_products_list(headers):
-    """
-    GET /api/market/products/my_products
-    """
-    req = requests.get('http://127.0.0.1:5000/api/market/products/my_products', headers=headers)
-    assert req.status_code == 200
+    def test_get_products_list(self, client, headers):
+        """
+        GET /api/market/products
+        """
+        req = client.get('/api/market/products', headers=headers)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
 
-def test_get_categories_list(headers):
-    """
-    GET /api/market/categories
-    """
-    req = requests.get('http://127.0.0.1:5000/api/market/categories', headers=headers)
-    assert req.status_code == 200
+    def test_get_my_product_list(self, client, headers):
+        """
+        GET /api/market/products/my_products
+        """
+        req = client.get('/api/market/products/my_products', headers=headers)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
 
-def test_get_categories_by_id(headers):
-    """
-    GET /api/market/products/my_products/1
-    """
-    req = requests.get('http://127.0.0.1:5000/api/market/categories/1', headers=headers)
-    assert req.status_code == 200
+    def test_add_new_product(self, client, headers, product_params):
+        """
+        POST /api/market/products
+        """
+        req = client.post('/api/market/products', headers=headers, json=product_params)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
 
-def test_get_products_by_id(headers):
-    """
-    GET /api/market/products/my_products
-    """
-    req = requests.get('http://127.0.0.1:5000/api/market/products/1', headers=headers)
-    assert req.status_code == 200
+    def test_get_product_by_id(self, client, product_id, headers):
+        """
+        GET '/api/market/products/id'
+        """
+        req = client.get(f'/api/market/products/{product_id}', headers=headers)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
 
-# def test_add_new_product():
-#     """
-#     POST /api/market/products
-#     """
-#     req = requests.post('http://127.0.0.1:5000/api/market/products', json=DATA, headers=headers)
-#     assert 'Message Error' not in req.json()
-#     assert req.status_code == 200
+    def test_change_product(self, client, headers, product_id, product_params):
+        """
+        PUT /api/market/products/id/change
+        """
+        req = client.put(f'/api/market/products/{product_id}/change', headers=headers, json=product_params)
+        assert req.status_code == 302
 
-# def test_delete_product_by_id():
-#     """
-#     """
+    def test_delete_product(self, client, headers, product_id):
+        """
+        DELETE /api/market/products/id/delete
+        """
+        req = client.delete(f'/api/market/products/{product_id}/delete', headers=headers)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
+
+
+
+
+class TestCategoryApi:
+
+    def test_get_categories_list(self, client, headers):
+        """
+        GET /api/market/categories
+        """
+        req = client.get('/api/market/categories', headers=headers)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
+
+    def test_get_categories_by_id(self, client, headers):
+        """
+        GET /api/market/products/my_products/1
+        """
+        req = client.get('/api/market/categories/1', headers=headers)
+        assert req.status_code == 200
+        assert 'Message Error' not in req.json
+
+
+
+

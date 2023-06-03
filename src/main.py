@@ -38,4 +38,3 @@ def close_session(exception=None):
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     app.run()
-
