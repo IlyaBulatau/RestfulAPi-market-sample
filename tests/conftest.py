@@ -4,7 +4,7 @@ import requests
 import sys
 sys.path.append('./src')
 
-from database.models import User, Product, Category
+from database.models import User, Product
 from main import app as main_app
 
 
@@ -39,16 +39,31 @@ def product_params():
     return product
 
 @pytest.fixture()
+def auth_params():
+    """
+    Create params for auth process
+    """
+    params = {
+            'username': 'Test',
+            'email': 'test@test.gmail.com',
+            'password': 'test'
+            }   
+    return params
+
+@pytest.fixture()
 def dns():
     return 'http://127.0.0.1:5000'
+    
 
 @pytest.fixture()
 def token(dns):
     """
     Process auth and get token
     """
-    params = {'email': 'artem@mail.ru', 'password': '1234'}
-    get_token = requests.post(dns+'/api/auth/login', json=params).json()
+    get_token = requests.post(dns+'/api/auth/login', json={
+                                                        'email': 'test@test.gmail.com',
+                                                        'password': 'test'
+                                                        }  ).json()
     token = get_token.get('token')
     return token
 
@@ -59,14 +74,6 @@ def headers(token):
     """
     headers = {"Authorization": f"Bearer {token}"}
     return headers
-
-@pytest.fixture()
-def product_id(product_params):
-    """
-    Get product ID in database
-    """
-    product = Product.query.filter(Product.name == product_params['name']).first()
-    return product.id
 
 
 

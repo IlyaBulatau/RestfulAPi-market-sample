@@ -1,11 +1,29 @@
-import pytest
+import sys
+sys.path.append('./src')
 
+from database.models import Product
+
+
+def test_register_process(client, auth_params):
+    """
+    POST /api/aut/register
+    """
+    req = client.post('api/auth/register', json=auth_params)
+    assert req.status_code == 200
 
 def test_get_token(token):
     assert token != None
 
 
 class TestProductApi:
+
+    def get_product_id(self, product_name):
+        """
+        Get product ID in database
+        """
+        product = Product.query.filter(Product.name == product_name).first()
+        return product.id
+
 
     def test_get_products_list(self, client, headers):
         """
@@ -31,25 +49,28 @@ class TestProductApi:
         assert req.status_code == 200
         assert 'Message Error' not in req.json
 
-    def test_get_product_by_id(self, client, product_id, headers):
+    def test_get_product_by_id(self, client, product_params, headers):
         """
         GET '/api/market/products/id'
         """
+        product_id = self.get_product_id(product_params['name'])
         req = client.get(f'/api/market/products/{product_id}', headers=headers)
         assert req.status_code == 200
         assert 'Message Error' not in req.json
 
-    def test_change_product(self, client, headers, product_id, product_params):
+    def test_change_product(self, client, headers, product_params):
         """
         PUT /api/market/products/id/change
         """
+        product_id = self.get_product_id(product_params['name'])
         req = client.put(f'/api/market/products/{product_id}/change', headers=headers, json=product_params)
         assert req.status_code == 302
 
-    def test_delete_product(self, client, headers, product_id):
+    def test_delete_product(self, client, headers, product_params):
         """
         DELETE /api/market/products/id/delete
         """
+        product_id = self.get_product_id(product_params['name'])
         req = client.delete(f'/api/market/products/{product_id}/delete', headers=headers)
         assert req.status_code == 200
         assert 'Message Error' not in req.json
