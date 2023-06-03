@@ -3,7 +3,6 @@ from flask_jwt_extended import JWTManager
 import flask
 
 from database.connect import Base, session, engine
-from database.models import User, Category, Product
 
 from market.market import market
 from authentication.auth import auth

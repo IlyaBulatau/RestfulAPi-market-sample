@@ -10,7 +10,7 @@ from log.log import log
 
 
 class ProductListView(MethodView):
-    decorators = [jwt_required()]
+    decorators = [jwt_required(fresh=True)]
 
     def get(self):
         products = Product.query.all()
@@ -58,7 +58,7 @@ class ProductListView(MethodView):
 
     
 class ProductDetailView(MethodView):
-    decorators = [jwt_required()]
+    decorators = [jwt_required(fresh=True)]
 
     def get(self, product_id):
         product = Product.query.filter(Product.id == product_id).first()
@@ -134,7 +134,7 @@ class ProductDetailView(MethodView):
         })
 
 class MyProductView(MethodView):
-    decorators = [jwt_required()]
+    decorators = [jwt_required(fresh=True)]
 
     def get(self):
         user_id = get_jwt_identity()
@@ -147,7 +147,7 @@ class MyProductView(MethodView):
     
 
 class CategoryListView(MethodView):
-    decorators = [jwt_required()]
+    decorators = [jwt_required(fresh=True)]
 
     def get(self):
         categories = Category.query.all()
@@ -158,7 +158,7 @@ class CategoryListView(MethodView):
 
 
 class ProductByCategoryView(MethodView):
-    decorators = [jwt_required()]
+    decorators = [jwt_required(fresh=True)]
 
     def get(self, category_id):
         category = Category.query.filter(Category.id == category_id).first()

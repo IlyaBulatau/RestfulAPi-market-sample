@@ -5,9 +5,38 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 
 from database.connect import Base, session
-from log.log import log
 
-class User(Base):
+
+class BaseModel:
+        
+    def save_to_db(self):
+        try:
+            session.add(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
+
+    def change_data_to_db(self, **kwargs):
+        try:
+            for key, val in kwargs.items():
+                setattr(self, key, val)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
+
+    def delete_from_db(self):
+        try:
+            session.delete(self)
+            session.commit()
+        except:
+            session.rollback()
+            raise Exception('DB Error')
+
+
+
+class User(Base, BaseModel):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer(), primary_key=True)
@@ -24,34 +53,9 @@ class User(Base):
         self.password = generate_password_hash(kwargs.get('password'), method='sha256')
     
     def get_token(self):
-        token = create_access_token(self.id)
+        token = create_access_token(self.id, fresh=True)
         return token
     
-    def save_to_db(self):
-        try:
-            session.add(self)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
-
-    def change_data_to_db(self, **kwargs):
-        try:
-            for key, val in kwargs.items():
-                setattr(self, key, val)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
-
-    def delete_from_db(self):
-        try:
-            session.delete(self)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
-
     @classmethod
     def authenticate(cls, **kwargs):
         email = kwargs.get('email', None)
@@ -61,39 +65,15 @@ class User(Base):
              raise Exception('Not find user')
         return user
 
-class Category(Base):
+class Category(Base, BaseModel):
     __tablename__ = 'categories'
 
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(), unique=True)
     products = relationship('Product', backref='category')
 
-    def save_to_db(self):
-        try:
-            session.add(self)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
 
-    def change_data_to_db(self, **kwargs):
-        try:
-            for key, val in kwargs.items():
-                setattr(self, key, val)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
-
-    def delete_from_db(self):
-        try:
-            session.delete(self)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
-
-class Product(Base):
+class Product(Base, BaseModel):
     __tablename__ = 'products'
 
     id = db.Column(db.Integer(), primary_key=True)
@@ -102,14 +82,6 @@ class Product(Base):
     price = db.Column(db.String(), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
-
-    def save_to_db(self):
-        try:
-            session.add(self)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')
 
     def change_data_to_db(self, **kwargs):
         try:
@@ -122,10 +94,3 @@ class Product(Base):
             session.rollback()
             raise Exception('DB Error')
 
-    def delete_from_db(self):
-        try:
-            session.delete(self)
-            session.commit()
-        except:
-            session.rollback()
-            raise Exception('DB Error')

@@ -5,6 +5,7 @@ from database.models import User
 from authentication.validators import RegisterShemaValidator
 from log.log import log
 
+
 class RegisterView(MethodView):
 
     def post(self):
@@ -48,10 +49,10 @@ class LoginView(MethodView):
             return jsonify({
                 'Message Error': str(e)
             })
-
+        
         token = user.get_token()
         log.info(f'User: ID {user.id} get token: {token}')
-        
+
         return jsonify({
             'token': token
         })
