@@ -8,7 +8,9 @@ from database.connect import Base, session
 
 
 class BaseModel:
-        
+    """
+    Base class for common operations
+    """
     def save_to_db(self):
         try:
             session.add(self)
@@ -47,6 +49,9 @@ class User(Base, BaseModel):
     products = relationship('Product', backref='user')
 
     def __init__(self, **kwargs):
+        """
+        Mehtod override for password hashing
+        """
         self.username = kwargs.get('username')
         self.email = kwargs.get('email')
         self.location = kwargs.get('location', None)
